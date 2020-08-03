@@ -12,7 +12,7 @@ with OBS, and then actually joins Zoom meetings with the
 client, it's like you're really there. All you have to do is turn the computer on, start the script up and LEAVE THE COMPUTER ALONE for the duration of your activities.
 As this records the screen, you should not use your computer for anything else and close all background programs that might interfere with the recording, or you will get sub-par results.
 
-The process is as follows:
+The process the program runs through is as follows:
 
 1. Determine what lectures/meetings are on today by a pre-set timetable you entered.
 2. Determine what lecture is on next.
