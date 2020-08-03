@@ -36,3 +36,12 @@ joining multiple meetings on multiple computers with the same account, so that w
 
 ### Requirements
 OBS Studio, Zoom and Python3. In terms of python3 modules, you will need to install pynput and psutil with pip if they are not already installed.
+
+### Usage
+Edit the TIMETABLE dictionary in the script to what your timetable is, with durations and zoom links. After that, you can execute it directly as a script, or you can run the python interpreter on it:
+
+`
+python3 /path/to/zooming_zoomer.py
+`
+
+and wait for it to exit once your lectures have been recorded.
