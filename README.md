@@ -9,7 +9,10 @@ a utility to record Zoom lectures for me.
 ### It's like you're there, but you're not.
 The way this program works, I'd say it's basically undetectable and indistinguishable from if you were actually watching it live. Since it records the screen
 with OBS, and then actually joins Zoom meetings with the
-client, it's like you're really there. The process is as follows:
+client, it's like you're really there. All you have to do is turn the computer on, start the script up and LEAVE THE COMPUTER ALONE for the duration of your activities.
+As this records the screen, you should not use your computer for anything else and close all background programs that might interfere with the recording, or you will get sub-par results.
+
+The process is as follows:
 
 1. Determine what lectures/meetings are on today by a pre-set timetable you entered.
 2. Determine what lecture is on next.
