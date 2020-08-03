@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Zooming Zoomer v0.1: A script to automatically record university zoom meetings.
+"""Zooming Zoomer v0.2: A script to automatically record university zoom meetings.
 Copyright (C) 2020 Matthew Hoffman
 
 This program is free software; you can redistribute it and/or
@@ -26,10 +26,7 @@ __copyright__ = "Copyright 2020, Matthew Hoffman"
 __version__ = "0.1"
 # Here I have provided my timetable as an example.
 # Replace and modify it to include yours as you see fit. Make sure
-# your time of day is in 24-hour format AND that your 'day' is
-# in the same integer format that can be seen in the DAYS dictionary
-# (0 for monday, 1 for tuesday, 2 for wednesday, etc.) see how I've put
-# it in for clarification.
+# your time of day is in 24-hour format.
 # FORMAT: activity_name: (day, hour, minute, duration, record?, link)
 TIMETABLE = {
     "CSSE2010 LEC1": (0, 8, 0, 1, False, "zoom-link-here"),
@@ -84,7 +81,7 @@ The current time is: {time_obj.hour}:{time_obj.minute} on {DAYS[time_obj.weekday
         join_meeting(next_activity[1][5])
         # Waitin' for the meeting to end. Sleep enables this, since it takes an input in seconds, multiply the duration
         # from the timetable dictionary by 3600, as this is 60*60 to convert hours to seconds.
-        print(f"{datetime.now()} Meeting theoretically joined.\n{datetime.now()} Waiting for meeting to finish.")
+        print(f"{datetime.now()} Meeting theoretically joined.\n{datetime.now()} Waiting {next_activity[1][3]*3600} seconds for meeting to finish.")
         sleep(next_activity[1][3]*3600)
         print(f"{datetime.now()} Meeting finished. Leaving meeting...")
         sleep(2)
@@ -94,7 +91,11 @@ The current time is: {time_obj.hour}:{time_obj.minute} on {DAYS[time_obj.weekday
         print(f"{datetime.now()} Meeting left. Closing OBS...")
         sleep(8)
         close_obs()
-        print(f"{datetime.now()} Recording complete.\n------------------------------------------")
+        time_to_sleep = time_until_next(next_activity, activities_list)
+        print(f"""{datetime.now()} Recording complete.
+Waiting {time_to_sleep} seconds until next activity.
+------------------------------------------""")
+        sleep(time_to_sleep)
     # Exit application once all activities have been recorded.
     print(f"{datetime.now()} No more activities for today!")
     sys.exit()
@@ -148,6 +149,20 @@ def get_activities(time_obj):
         in TIMETABLE.items() if properties[4] and properties[0] == time_obj.weekday()\
             and time_obj.hour <= properties[1]}
     return sorted(possible_activities.items(), key=lambda x: x[1])
+
+def time_until_next(next_activity, activities_list):
+    """Calculate time before next activity.
+    Parameters:
+        next_activity (tuple): Tuple containing activity data for the activity
+            just recorded.
+        activities_list (list): List of activities remaining in the day"""
+    if activities_list == []:
+        return 0
+    # Essentially just ((hours*60) + minutes*60) but looks complex because of the
+    # indexing used.
+    return ((activities_list[0][1][1] - (next_activity[1][3]\
+        + next_activity[1][1]))*60 + activities_list[0][1][2]\
+            - next_activity[1][2])*60
 
 if __name__ == "__main__":
     main()
