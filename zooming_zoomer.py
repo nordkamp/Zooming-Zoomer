@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Zooming Zoomer v0.2: A script to automatically record university zoom meetings.
+"""Zooming Zoomer v0.1: A script to automatically record university zoom meetings.
 Copyright (C) 2020 Matthew Hoffman
 
 This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ from psutil import process_iter
 from pynput.keyboard import Key, Controller
 __author__ = "Matthew Hoffman"
 __copyright__ = "Copyright 2020, Matthew Hoffman"
-__version__ = "0.1"
+__version__ = "0.2"
 # Here I have provided my timetable as an example.
 # Replace and modify it to include yours as you see fit. Make sure
 # your time of day is in 24-hour format.
@@ -63,6 +63,9 @@ def main():
     programs. Also contains the main loop."""
     print("Oh, I'm a zoomy zoomer, yeah!")
     activities_list = get_activities(datetime.now())
+    time_to_sleep = time_until_first(activities_list)
+    print(f"First activity of the day occurs in {time_to_sleep} seconds. Waiting...")
+    sleep(time_to_sleep)
     # This loop will run until activities_list is empty.
     while activities_list != []:
         # Get the time right now
@@ -149,6 +152,15 @@ def get_activities(time_obj):
         in TIMETABLE.items() if properties[4] and properties[0] == time_obj.weekday()\
             and time_obj.hour <= properties[1]}
     return sorted(possible_activities.items(), key=lambda x: x[1])
+
+def time_until_first(activities_list):
+    """Calculates the time until the first activity.
+    Parameters:
+        activities_list (list): List of activities for the day."""
+    time_obj = datetime.now()
+    if activities_list == []:
+        return 0
+    return ((activities_list[0][1][1] - time_obj.hour)*60 + (activities_list[0][1][2] - time_obj.minute))*60
 
 def time_until_next(next_activity, activities_list):
     """Calculate time before next activity.
