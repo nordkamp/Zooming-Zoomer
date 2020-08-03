@@ -23,7 +23,7 @@ from psutil import process_iter
 from pynput.keyboard import Key, Controller
 __author__ = "Matthew Hoffman"
 __copyright__ = "Copyright 2020, Matthew Hoffman"
-__version__ = "0.2"
+__version__ = "0.1"
 # Here I have provided my timetable as an example.
 # Replace and modify it to include yours as you see fit. Make sure
 # your time of day is in 24-hour format.
@@ -64,8 +64,11 @@ def main():
     print("Oh, I'm a zoomy zoomer, yeah!")
     activities_list = get_activities(datetime.now())
     time_to_sleep = time_until_first(activities_list)
-    print(f"First activity of the day occurs in {time_to_sleep} seconds. Waiting...")
-    sleep(time_to_sleep)
+    time_to_sleep = time_until_first(activities_list)
+    while time_to_sleep > 0:
+        print(f"First activity of the day occurs in {time_to_sleep} seconds. Waiting...", end="\r")
+        sleep(1)
+        time_to_sleep -= 1
     # This loop will run until activities_list is empty.
     while activities_list != []:
         # Get the time right now
@@ -154,9 +157,6 @@ def get_activities(time_obj):
     return sorted(possible_activities.items(), key=lambda x: x[1])
 
 def time_until_first(activities_list):
-    """Calculates the time until the first activity.
-    Parameters:
-        activities_list (list): List of activities for the day."""
     time_obj = datetime.now()
     if activities_list == []:
         return 0
