@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Zooming Zoomer v0.1: A script to automatically record university zoom meetings.
+"""Zooming Zoomer v0.3: A script to automatically record university zoom meetings.
 Copyright (C) 2020 Matthew Hoffman
 
 This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ from psutil import process_iter
 from pynput.keyboard import Key, Controller
 __author__ = "Matthew Hoffman"
 __copyright__ = "Copyright 2020, Matthew Hoffman"
-__version__ = "0.1"
+__version__ = "0.3"
 # Here I have provided my timetable as an example.
 # Replace and modify it to include yours as you see fit. Make sure
 # your time of day is in 24-hour format.
@@ -63,12 +63,12 @@ def main():
     programs. Also contains the main loop."""
     print("Oh, I'm a zoomy zoomer, yeah!")
     activities_list = get_activities(datetime.now())
-    time_to_sleep = time_until_first(activities_list)
-    time_to_sleep = time_until_first(activities_list)
+    time_to_sleep = time_until_next(activities_list)
     while time_to_sleep > 0:
         print(f"First activity of the day occurs in {time_to_sleep} seconds. Waiting...", end="\r")
-        sleep(1)
         time_to_sleep -= 1
+        sleep(1)
+    print("")
     # This loop will run until activities_list is empty.
     while activities_list != []:
         # Get the time right now
@@ -97,7 +97,7 @@ The current time is: {time_obj.hour}:{time_obj.minute} on {DAYS[time_obj.weekday
         print(f"{datetime.now()} Meeting left. Closing OBS...")
         sleep(8)
         close_obs()
-        time_to_sleep = time_until_next(next_activity, activities_list)
+        time_to_sleep = time_until_next(activities_list)
         print(f"""{datetime.now()} Recording complete.
 Waiting {time_to_sleep} seconds until next activity.
 ------------------------------------------""")
@@ -156,25 +156,17 @@ def get_activities(time_obj):
             and time_obj.hour <= properties[1]}
     return sorted(possible_activities.items(), key=lambda x: x[1])
 
-def time_until_first(activities_list):
-    time_obj = datetime.now()
-    if activities_list == []:
-        return 0
-    return ((activities_list[0][1][1] - time_obj.hour)*60 + (activities_list[0][1][2] - time_obj.minute))*60
-
-def time_until_next(next_activity, activities_list):
+def time_until_next(activities_list):
     """Calculate time before next activity.
     Parameters:
-        next_activity (tuple): Tuple containing activity data for the activity
-            just recorded.
         activities_list (list): List of activities remaining in the day"""
     if activities_list == []:
         return 0
+    time_obj = datetime.now()
     # Essentially just ((hours*60) + minutes*60) but looks complex because of the
     # indexing used.
-    return ((activities_list[0][1][1] - (next_activity[1][3]\
-        + next_activity[1][1]))*60 + activities_list[0][1][2]\
-            - next_activity[1][2])*60
+    return ((activities_list[0][1][1] - time_obj.hour)*60 + activities_list[0][1][2]\
+            - time_obj.minute)*60 - time_obj.second
 
 if __name__ == "__main__":
     main()
