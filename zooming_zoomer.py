@@ -26,7 +26,10 @@ __copyright__ = "Copyright 2020, Matthew Hoffman"
 __version__ = "0.1"
 # Here I have provided my timetable as an example.
 # Replace and modify it to include yours as you see fit. Make sure
-# your time of day is in 24-hour format.
+# your time of day is in 24-hour format AND that your 'day' is
+# in the same integer format that can be seen in the DAYS dictionary
+# (0 for monday, 1 for tuesday, 2 for wednesday, etc.) see how I've put
+# it in for clarification.
 # FORMAT: activity_name: (day, hour, minute, duration, record?, link)
 TIMETABLE = {
     "CSSE2010 LEC1": (0, 8, 0, 1, False, "zoom-link-here"),
