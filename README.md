@@ -1,4 +1,4 @@
-# Zooming-Zoomer
+# Zooming Zoomer
 Program to automate recording of University Zoom lectures and meetings.
 
 Have you ever been too busy (or too lazy) to attend your university zoom lectures? Well I've been both, and unfortunately for me, the university that I'm at is
@@ -38,6 +38,9 @@ joining multiple meetings on multiple computers with the same account, so that w
 OBS Studio, Zoom and Python3. In terms of python3 modules, you will need to install pynput and psutil with pip if they are not already installed.
 
 ### Usage
+Firstly, you must tell your browser to automatically open zoom links in the Zoom application. If you do not, it will likely show a pop up window that will ask you
+which program to open it in, and not actually launch Zoom for you. This obviously breaks the automatic recording idea, so make sure your browser opens Zoom links in zoom automatically! In Firefox, this can be done by selecting "Remember my choice" when asked what program to open Zoom links with. I don't use Google Chrome so I cannot give instructions on that, but it should be fairly easy to find out. After you do this, I'd recommend trying to launch a test Zoom meeting and seeing if your browser opens it automatically.
+
 Edit the TIMETABLE dictionary in the script to what your timetable is, with durations and zoom links. After that, you can execute it directly as a script, or you can run the python interpreter on it:
 
 `
