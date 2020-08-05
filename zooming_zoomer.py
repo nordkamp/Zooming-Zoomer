@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Zooming Zoomer v0.3: A script to automatically record university zoom meetings.
+"""Zooming Zoomer v0.8: A script to automatically record university zoom meetings.
 Copyright (C) 2020 Matthew Hoffman
 
 This program is free software; you can redistribute it and/or
@@ -19,11 +19,12 @@ import sys
 from os import system
 from time import sleep
 from datetime import datetime
+from threading import Thread, currentThread
 from psutil import process_iter
 from pynput.keyboard import Key, Controller
 __author__ = "Matthew Hoffman"
 __copyright__ = "Copyright 2020, Matthew Hoffman"
-__version__ = "0.3"
+__version__ = "0.8"
 # Here I have provided my timetable as an example.
 # Replace and modify it to include yours as you see fit. Make sure
 # your time of day is in 24-hour format.
@@ -85,10 +86,18 @@ The current time is: {time_obj.hour}:{time_obj.minute} on {DAYS[time_obj.weekday
         # Once OBS has started, start Zoom and join a meeting.
         print(f"{datetime.now()} OBS Started. Starting Zoom...")
         join_meeting(next_activity[1][5])
-        # Waitin' for the meeting to end. Sleep enables this, since it takes an input in seconds, multiply the duration
-        # from the timetable dictionary by 3600, as this is 60*60 to convert hours to seconds.
+        # Waitin' for the meeting to end. Sleep enables this, since it takes an input in seconds,
+        # multiply the durationfrom the timetable dictionary by 3600, as this
+        # is 60*60 to convert hours to seconds.
         print(f"{datetime.now()} Meeting theoretically joined.\n{datetime.now()} Waiting {next_activity[1][3]*3600} seconds for meeting to finish.")
-        sleep(next_activity[1][3]*3600)
+        test_thread = Thread(target=crash_testing_thread, args=(next_activity[1][5],), daemon=True)
+        test_thread.start()
+        time_to_sleep = next_activity[1][3]*3600
+        while time_to_sleep > 0:
+            print(f"Meeting ends in {time_to_sleep} seconds. Waiting...", end="\r")
+            time_to_sleep -= 1
+            sleep(1)
+        test_thread.do_run = False
         print(f"{datetime.now()} Meeting finished. Leaving meeting...")
         sleep(2)
         # Leave the zoom meeting using keyboard shortcuts.
@@ -144,16 +153,32 @@ def close_obs():
     """Kill OBS after meeting is complete."""
     system("killall -9 obs")
 
-def check_zooming():
-    """Check if zoom is currently running."""
-    return "zoom" in (process.name() for process in process_iter())
+def crash_testing_thread(link):
+    """Main function for crash testing.
+    Parameters:
+        link (str): Zoom link to the meeting."""
+    thread_instance = currentThread()
+    while getattr(thread_instance, "do_run", True):
+        crash_handler(link)
+        sleep(5)
+
+def crash_handler(link):
+    """Function that tests for and handles crashes by re-opening programs.
+    Parameters:
+        link (str): Zoom link to the meeting."""
+    processes = (process.name() for process in process_iter())
+    if not "zoom" in processes:
+        join_meeting(link)
+    if not "obs" in processes:
+        start_obs()
 
 def get_activities(time_obj):
     """Gets a list of today's activities and sorts them according to
     when they occur."""
     possible_activities = {activity:properties for (activity, properties)\
         in TIMETABLE.items() if properties[4] and properties[0] == time_obj.weekday()\
-            and time_obj.hour <= properties[1]}
+            and time_obj.hour < properties[1] or (time_obj.hour == properties[1] and\
+                time_obj.minute <= properties[2])}
     return sorted(possible_activities.items(), key=lambda x: x[1])
 
 def time_until_next(activities_list):
